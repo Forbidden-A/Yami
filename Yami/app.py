@@ -9,7 +9,7 @@ from Yami.subclasses.bot import Bot
 
 async def get_prefix(bot, message: hikari.Message) -> typing.List[str]:
     if not message.guild_id:
-        return [f"{bot.user.mention} ", 'y.']
+        return [f"{bot.user.mention} ", "y."]
     else:
         guild = await models.Guild.get(id=message.guild_id)
         return [f"{bot.user.mention} ", guild.prefix]
@@ -29,5 +29,5 @@ def main():
         )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

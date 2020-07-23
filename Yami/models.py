@@ -10,5 +10,5 @@ class StarredMessage(Model):
 
 class Guild(Model):
     id = fields.BigIntField(unique=True, pk=True)
-    prefix = fields.TextField(default='y.')
+    prefix = fields.TextField(default="y.")
     starboard = fields.BigIntField(null=True, default=None)

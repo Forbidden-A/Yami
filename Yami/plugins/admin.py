@@ -21,7 +21,7 @@ class Admin(plugins.Plugin):
 
     @owner_only()
     @guild_only()
-    @settings.command(name='setstarboard', aliases=['ssb'])
+    @settings.command(name="setstarboard", aliases=["ssb"])
     async def set_starboard(self, context: Context, channel: text_channel_converter):
         channel: GuildTextChannel = channel
         guild = await models.Guild.get(id=context.guild_id)
@@ -31,12 +31,13 @@ class Admin(plugins.Plugin):
 
     @owner_only()
     @guild_only()
-    @settings.command(name='setprefix', aliases=['sp'])
+    @settings.command(name="setprefix", aliases=["sp"])
     async def set_prefix(self, context: Context, prefix):
         guild = await models.Guild.get(id=context.guild_id)
         guild.prefix = prefix
         await guild.save()
         await context.reply(f"Prefix successfully set to `{prefix}`.")
+
 
 def load(bot):
     bot.add_plugin(Admin(bot))
