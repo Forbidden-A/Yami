@@ -31,7 +31,7 @@ class Events(plugins.Plugin):
     async def get_starboard_embed(message: hikari.Message, created_at: datetime, stars: int) -> typing.Tuple[hikari.Embed, str]:
         channel = await message.fetch_channel()
         embed = hikari.Embed(
-            description=f"**[Jump to message!]({message.link})**\n\n{message.content}",
+            description=f"**[Jump to message!]({message.link.replace('@me', str(message.guild_id))})**\n\n{message.content}",
             colour="#F1C40F",
             timestamp=created_at
         ).set_author(
@@ -84,7 +84,6 @@ class Events(plugins.Plugin):
         message = await self.bot.rest.fetch_message(event.channel_id, event.message_id)
         starred_message_model = await models.StarredMessage.get_or_none(id=event.message_id)
         stars = await self.bot.rest.fetch_reactions_for_emoji(event.channel_id, event.message_id, '⭐').count()
-        print(stars)
         if starred_message_model:
             starred_message = await self.bot.rest.fetch_message(starboard, starred_message_model.star_id)
             embed, content = await self.get_starboard_embed(message, starred_message.created_at, stars)
