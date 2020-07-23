@@ -28,10 +28,10 @@ class Events(plugins.Plugin):
         await models.Guild.get_or_create(id=event.guild.id)
 
     @staticmethod
-    async def get_starboard_embed(message: hikari.Message, created_at: datetime, stars: int) -> typing.Tuple[hikari.Embed, str]:
+    async def get_starboard_embed(message: hikari.Message, guild_id, created_at: datetime, stars: int) -> typing.Tuple[hikari.Embed, str]:
         channel = await message.fetch_channel()
         embed = hikari.Embed(
-            description=f"**[Jump to message!]({message.link.replace('@me', str(message.guild_id))})**\n\n{message.content}",
+            description=f"**[Jump to message!]({message.link.replace('@me', str(guild_id))})**\n\n{message.content}",
             colour="#F1C40F",
             timestamp=created_at
         ).set_author(
@@ -64,11 +64,11 @@ class Events(plugins.Plugin):
         stars = await self.bot.rest.fetch_reactions_for_emoji(event.channel_id, event.message_id, '⭐').count()
         if starred_message_model:
             starred_message = await self.bot.rest.fetch_message(starboard, starred_message_model.star_id)
-            embed, content = await self.get_starboard_embed(message, starred_message.created_at, stars)
+            embed, content = await self.get_starboard_embed(message, guild.id, starred_message.created_at, stars)
             await starred_message.edit(embed=embed, content=content)
         else:
             if stars > 2:
-                embed, content = await self.get_starboard_embed(message, datetime.now(timezone.utc), stars)
+                embed, content = await self.get_starboard_embed(message, guild.id, datetime.now(timezone.utc), stars)
                 starred_message = await starboard.send(embed=embed, content=content)
                 await models.StarredMessage.create(id=message.id, star_id=starred_message.id, stars=stars)
 
@@ -86,7 +86,7 @@ class Events(plugins.Plugin):
         stars = await self.bot.rest.fetch_reactions_for_emoji(event.channel_id, event.message_id, '⭐').count()
         if starred_message_model:
             starred_message = await self.bot.rest.fetch_message(starboard, starred_message_model.star_id)
-            embed, content = await self.get_starboard_embed(message, starred_message.created_at, stars)
+            embed, content = await self.get_starboard_embed(message, guild.id, starred_message.created_at, stars)
             await starred_message.edit(embed=embed, content=content)
 
 
