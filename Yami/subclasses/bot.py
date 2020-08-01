@@ -3,7 +3,6 @@ import traceback
 
 import hikari
 import lightbulb
-import typing
 from tortoise import Tortoise
 
 

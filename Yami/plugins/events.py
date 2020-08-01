@@ -4,10 +4,10 @@ from datetime import datetime, timezone
 import hikari
 from hikari import (
     StartingEvent,
-    GuildCreateEvent,
-    MessageReactionAddEvent,
-    ReadyEvent,
-    MessageReactionRemoveEvent,
+    ShardReadyEvent,
+    GuildAvailableEvent,
+    ReactionDeleteEvent,
+    ReactionAddEvent, NotFound,
 )
 from lightbulb import plugins
 
@@ -24,17 +24,17 @@ class Events(plugins.Plugin):
     async def on_starting(self, event: StartingEvent):
         await self.bot.initialize_database()
 
-    @plugins.listener(event_type=ReadyEvent)
-    async def on_ready(self, event: ReadyEvent):
+    @plugins.listener(event_type=ShardReadyEvent)
+    async def on_ready(self, event: ShardReadyEvent):
         self.bot.user = event.my_user
 
-    @plugins.listener(event_type=GuildCreateEvent)
-    async def on_guild_join(self, event: GuildCreateEvent):
+    @plugins.listener(event_type=GuildAvailableEvent)
+    async def on_guild_join(self, event: GuildAvailableEvent):
         await models.Guild.get_or_create(id=event.guild.id)
 
     @staticmethod
     async def get_starboard_embed(
-        message: hikari.Message, guild_id, created_at: datetime, stars: int
+            message: hikari.Message, guild_id, created_at: datetime, stars: int
     ) -> typing.Tuple[hikari.Embed, str]:
         channel = await message.fetch_channel()
         embed = (
@@ -43,8 +43,8 @@ class Events(plugins.Plugin):
                 colour="#F1C40F",
                 timestamp=created_at,
             )
-            .set_author(name=message.author.username, icon=message.author.avatar)
-            .set_footer(text=f"#{channel.name}",)
+                .set_author(name=message.author.username, icon=message.author.avatar)
+                .set_footer(text=f"#{channel.name}", )
         )
         if message.attachments:
             attachment = message.attachments[0]
@@ -52,8 +52,8 @@ class Events(plugins.Plugin):
 
         return embed, f"⭐ {stars} <#{channel.id}>"
 
-    @plugins.listener(event_type=MessageReactionAddEvent)
-    async def on_reaction_add(self, event: MessageReactionAddEvent):
+    @plugins.listener(event_type=ReactionAddEvent)
+    async def on_reaction_add(self, event: ReactionAddEvent):
         guild, _ = await models.Guild.get_or_create(id=event.guild_id)
         if not guild.starboard:
             return
@@ -64,7 +64,7 @@ class Events(plugins.Plugin):
             guild.starboard
         )
         message = await self.bot.rest.fetch_message(event.channel_id, event.message_id)
-        if message.author.id == event.member.id:
+        if message.author.id == event.user_id:
             return await message.remove_reaction(emoji="⭐", user=message.author)
         if message.author.id == self.bot.user.id or event.member.is_bot:
             return
@@ -75,9 +75,13 @@ class Events(plugins.Plugin):
             event.channel_id, event.message_id, "⭐"
         ).count()
         if starred_message_model:
-            starred_message = await self.bot.rest.fetch_message(
-                starboard, starred_message_model.star_id
-            )
+            try:
+                starred_message = await self.bot.rest.fetch_message(
+                    starboard, starred_message_model.star_id
+                )
+            except NotFound:
+                await starred_message_model.delete()
+                return
             embed, content = await self.get_starboard_embed(
                 message, guild.id, starred_message.created_at, stars
             )
@@ -92,8 +96,8 @@ class Events(plugins.Plugin):
                     id=message.id, star_id=starred_message.id, stars=stars
                 )
 
-    @plugins.listener(event_type=MessageReactionRemoveEvent)
-    async def on_reaction_remove(self, event: MessageReactionRemoveEvent):
+    @plugins.listener(event_type=ReactionDeleteEvent)
+    async def on_reaction_remove(self, event: ReactionDeleteEvent):
         guild, _ = await models.Guild.get_or_create(id=event.guild_id)
         if not guild.starboard:
             return
@@ -104,6 +108,8 @@ class Events(plugins.Plugin):
             guild.starboard
         )
         message = await self.bot.rest.fetch_message(event.channel_id, event.message_id)
+        if event.user_id == message.author.id:
+            return
         starred_message_model = await models.StarredMessage.get_or_none(
             id=event.message_id
         )
@@ -111,9 +117,13 @@ class Events(plugins.Plugin):
             event.channel_id, event.message_id, "⭐"
         ).count()
         if starred_message_model:
-            starred_message = await self.bot.rest.fetch_message(
-                starboard, starred_message_model.star_id
-            )
+            try:
+                starred_message = await self.bot.rest.fetch_message(
+                    starboard, starred_message_model.star_id
+                )
+            except NotFound:
+                await starred_message_model.delete()
+                return
             embed, content = await self.get_starboard_embed(
                 message, guild.id, starred_message.created_at, stars
             )
