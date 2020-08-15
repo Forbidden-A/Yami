@@ -20,11 +20,11 @@ handlers:
     class: logging.handlers.RotatingFileHandler
     formatter: formatter
     filename: logs.log
-    level: WARNING
+    level: INFO
     encoding: "utf8"
 
 loggers:
-  Athena:
+  Yami:
     level: DEBUG
     handlers: [console, file]
     propagate: no

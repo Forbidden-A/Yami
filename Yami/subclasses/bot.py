@@ -9,10 +9,10 @@ from tortoise import Tortoise
 
 
 class Bot(lightbulb.Bot):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, logger=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.user: typing.Optional[hikari.User] = None
-        self.logger = kwargs.get("logger") or logging.getLogger(__name__)
+        self.logger = logger or logging.getLogger(__name__)
         self.send = self.rest.create_message
 
     async def initialize_database(self):
