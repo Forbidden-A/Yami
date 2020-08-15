@@ -3,6 +3,9 @@ import os
 import hikari
 import typing
 
+from hikari.impl import rest
+from hikari.impl.rest import RESTClientImpl
+
 from Yami import models
 from Yami.subclasses.bot import Bot
 
@@ -19,6 +22,9 @@ def main():
     # Set path to bot directory
     dir_path = os.path.dirname(os.path.realpath(__file__))
     os.chdir(dir_path)
+
+    rest.RESTClientImpl = type("REST", (RESTClientImpl,), {})  # unslot
+
     if token := os.getenv("YAMI_TOKEN"):
         bot = Bot(prefix=get_prefix, token=token, insensitive_commands=True)
         bot.load_extensions()

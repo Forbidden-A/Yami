@@ -10,6 +10,7 @@ class Bot(lightbulb.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.user: hikari.User = None
+        self.send = self.rest.create_message
 
     async def initialize_database(self):
         if db_url := os.getenv("YAMI_DB_URL"):
@@ -45,4 +46,4 @@ class Bot(lightbulb.Bot):
 
     async def close(self) -> None:
         await Tortoise.close_connections()
-        await super(Bot, self).close()
+        await super().close()
