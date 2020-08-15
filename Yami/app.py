@@ -1,8 +1,10 @@
+import logging
+import logging.config
 import os
-
-import hikari
 import typing
 
+import hikari
+import yaml
 from hikari.impl import rest
 from hikari.impl.rest import RESTClientImpl
 
@@ -25,12 +27,16 @@ def main():
 
     rest.RESTClientImpl = type("REST", (RESTClientImpl,), {})  # unslot
 
+    with open('log_config.yml', 'r') as cfg:
+        log_config = yaml.safe_load(cfg.read())
+        logging.config.dictConfig(log_config)
+    logger = logging.getLogger("Yami")
     if token := os.getenv("YAMI_TOKEN"):
-        bot = Bot(prefix=get_prefix, token=token, insensitive_commands=True)
+        bot = Bot(prefix=get_prefix, token=token, insensitive_commands=True, logger=logger)
         bot.load_extensions()
         bot.run()
     else:
-        print(
+        logger.error(
             "Please set an environment variable called `YAMI_TOKEN` and set its value to the bot's token."
         )
 

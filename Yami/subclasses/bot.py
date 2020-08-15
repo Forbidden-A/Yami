@@ -1,15 +1,18 @@
+import logging
 import os
 import traceback
 
 import hikari
 import lightbulb
+import typing
 from tortoise import Tortoise
 
 
 class Bot(lightbulb.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.user: hikari.User = None
+        self.user: typing.Optional[hikari.User] = None
+        self.logger = kwargs.get("logger") or logging.getLogger(__name__)
         self.send = self.rest.create_message
 
     async def initialize_database(self):
@@ -17,26 +20,28 @@ class Bot(lightbulb.Bot):
             await Tortoise.init(db_url=db_url, modules={"models": ["Yami.models"]})
             await Tortoise.generate_schemas()
         else:
-            print(
+            self.logger.error(
                 "Please set an environment variable called `YAMI_DB_URL` and set its value to the DB url.",
                 "\n format is as follows `postgres://{username}:{password}@{host}:{port}/{db}`",
             )
+            exit(-1)
 
     def load_extensions(self):
         for extension in os.listdir("plugins"):
             try:
                 if extension.endswith(".py"):
                     self.load_extension(f"Yami.plugins.{extension[:-3]}")
-                    print(f"Loaded extension {extension[:-3]}")
+                    self.logger.info(f"Loaded extension %s", extension[:-3])
                 else:
-                    print(extension, "is not a python file.")
+                    self.logger.info("%s is not a python file.", extension)
             except lightbulb.errors.ExtensionMissingLoad:
-                print(extension, "is missing load function.")
+                self.logger.warning("%s is missing load function.", extension)
             except lightbulb.errors.ExtensionAlreadyLoaded:
                 pass
             except lightbulb.errors.ExtensionError as e:
-                print(extension, "Failed to load.")
-                print(
+                self.logger.error("%s Failed to load.", extension)
+                self.logger.error(
+                    "\n"
                     "".join(
                         traceback.format_exception(
                             type(e or e.__cause__), e or e.__cause__, e.__traceback__
