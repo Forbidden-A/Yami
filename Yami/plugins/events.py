@@ -13,12 +13,12 @@ from lightbulb import plugins
 
 from Yami import models
 from Yami.subclasses.bot import Bot
+from Yami.subclasses.plugin import Plugin
 
 
-class Events(plugins.Plugin):
+class Events(Plugin):
     def __init__(self, bot: Bot):
-        super(Events, self).__init__()
-        self.bot: Bot = bot
+        super(Events, self).__init__(bot)
 
     @plugins.listener(event_type=StartingEvent)
     async def on_starting(self, event: StartingEvent):

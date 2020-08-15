@@ -1,16 +1,16 @@
 from hikari import GuildTextChannel
-from lightbulb import plugins, commands, owner_only, guild_only
+from lightbulb import commands, owner_only, guild_only
 from lightbulb.context import Context
 from lightbulb.converters import text_channel_converter
 
 from Yami import models
 from Yami.subclasses.bot import Bot
+from Yami.subclasses.plugin import Plugin
 
 
-class Admin(plugins.Plugin):
+class Admin(Plugin):
     def __init__(self, bot: Bot):
-        super().__init__()
-        self.bot = bot
+        super().__init__(bot)
 
     # noinspection PyProtectedMember
     @commands.group()

@@ -32,7 +32,7 @@ def main():
         logging.config.dictConfig(log_config)
     logger = logging.getLogger("Yami")
     if token := os.getenv("YAMI_TOKEN"):
-        bot = Bot(prefix=get_prefix, token=token, insensitive_commands=True, logger=logger)
+        bot = Bot(prefix=get_prefix, token=token, insensitive_commands=True, logger=logger, stateless=False)
         bot.load_extensions()
         bot.run()
     else:

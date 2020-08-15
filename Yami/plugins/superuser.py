@@ -3,17 +3,20 @@ import collections
 import contextlib
 import importlib
 import io
+import logging
 import platform
 import re
 import textwrap
 import traceback
 from datetime import timezone, datetime
-
 import hikari
 import lightbulb
-from lightbulb import plugins, Context, commands, checks
+import typing
+from lightbulb import Context, commands, checks
 from lightbulb.utils import EmbedPaginator, EmbedNavigator
 from tortoise import Tortoise
+
+from Yami.subclasses.plugin import Plugin
 
 
 def maybe_import(lib):
@@ -41,16 +44,13 @@ modules = _ModuleDict(
         "async_timeout": maybe_import("async_timeout"),
         "asyncio": maybe_import("asyncio"),
         "collections": maybe_import("collections"),
-        "commands": maybe_import("libneko.commands"),
         "dataclasses": maybe_import("dataclasses"),
         "decimal": maybe_import("decimal"),
-        "discord": maybe_import("discord"),
         "functools": maybe_import("functools"),
         "hashlib": maybe_import("hashlib"),
         "inspect": maybe_import("inspect"),
         "io": maybe_import("io"),
         "json": maybe_import("json"),
-        "libneko": maybe_import("libneko"),
         "math": maybe_import("math"),
         "os": maybe_import("os"),
         "random": maybe_import("random"),
@@ -66,14 +66,16 @@ modules = _ModuleDict(
         "subprocess": maybe_import("subprocess"),
         "time": maybe_import("time"),
         "datetime": maybe_import("datetime"),
+        "hikari": maybe_import("hikari"),
+        "lightbulb": maybe_import("lightbulb"),
+        "PIL": maybe_import("PIL")
     }
 )
 
 
-class SuperUser(plugins.Plugin):
+class SuperUser(Plugin):
     def __init__(self, bot):
-        super().__init__()
-        self.bot = bot
+        super().__init__(bot)
         self.pattern = re.compile(r"```(?P<syntax>.*)\n(?P<body>[^`]+?)```")
         self.last_result = None
 
@@ -102,18 +104,24 @@ class SuperUser(plugins.Plugin):
         stream = io.StringIO()
         stack.enter_context(contextlib.redirect_stdout(stream))
         stack.enter_context(contextlib.redirect_stderr(stream))
-
+        stream_handler = logging.StreamHandler(stream)
+        stream_handler.setFormatter(self.bot.logger.handlers[0].formatter)
+        self.logger.addHandler(stream_handler)
         with stack:
             try:
-                env = {
+                env: typing.Dict[str, typing.Optional[typing.Any]] = {
                     "self": self,
                     "ctx": context,
                     "channel_id": context.channel_id,
+                    "channel": self.bot.cache.get_guild_channel(context.channel_id),
                     "author": context.author,
+                    "member": context.member,
+                    "guild": self.bot.cache.get_guild(context.guild_id),
                     "guild_id": context.guild_id,
                     "message": context.message,
-                    "_": self.last_result,
+                    "_": self.last_result
                 }
+
                 env.update(globals())
                 env.update(locals())
                 env.update(modules)
@@ -123,11 +131,10 @@ class SuperUser(plugins.Plugin):
             except SyntaxError as e:
                 stream.write(self.get_syntax_error(e))
             except Exception as e:
-                stream.write(
-                    "".join(traceback.format_exception(type(e), e, e.__traceback__))
-                )
+                traceback.print_exception(type(e), e, e.__traceback__)
             else:
                 success = True
+                self.logger.removeHandler(stream_handler)
 
         stream.seek(0)
         lines = "\n".join(stream.readlines()).replace(self.bot._token, "~TOKEN~").replace("`", "´")
