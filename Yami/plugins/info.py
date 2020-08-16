@@ -30,7 +30,7 @@ class Info(Plugin):
             description=(
                 "Yami is a discord bot made using [Hikari](https://nekokatt.github.io/hikari/) and [Lightbulb](https://tandemdude.gitlab.io/lightbulb/)\n"
                 "[Hikari Discord](https://discord.com/invite/Jx4cNGG)\n"
-                "[Hikari Docs](https://nekokatt.gitlab.io/hikari/hikari/index.html)\n"
+                "[Hikari Docs](https://nekokatt.github.io/hikari/hikari/index.html)\n"
                 "[Hikari Github](https://github.com/nekokatt/hikari)\n"
                 "[Hikari PyPi](https://pypi.org/project/hikari/)\n"
                 "[Lightbulb Docs](https://tandemdude.gitlab.io/lightbulb/)\n"
