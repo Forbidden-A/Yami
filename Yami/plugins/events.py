@@ -7,7 +7,8 @@ from hikari import (
     ShardReadyEvent,
     GuildAvailableEvent,
     ReactionDeleteEvent,
-    ReactionAddEvent, NotFoundError,
+    ReactionAddEvent,
+    NotFoundError,
 )
 from lightbulb import plugins
 
@@ -34,7 +35,7 @@ class Events(Plugin):
 
     @staticmethod
     async def get_starboard_embed(
-            message: hikari.Message, guild_id, created_at: datetime, stars: int
+        message: hikari.Message, guild_id, created_at: datetime, stars: int
     ) -> typing.Tuple[hikari.Embed, str]:
         channel = await message.fetch_channel()
         embed = (
@@ -43,8 +44,8 @@ class Events(Plugin):
                 colour="#F1C40F",
                 timestamp=created_at,
             )
-                .set_author(name=message.author.username, icon=message.author.avatar)
-                .set_footer(text=f"#{channel.name}", )
+            .set_author(name=message.author.username, icon=message.author.avatar)
+            .set_footer(text=f"#{channel.name}",)
         )
         if message.attachments:
             attachment = message.attachments[0]
@@ -65,7 +66,11 @@ class Events(Plugin):
 
         message = await self.bot.rest.fetch_message(event.channel_id, event.message_id)
 
-        if message.author.id == event.user_id or message.author.id == self.bot.user.id or event.member.is_bot:
+        if (
+            message.author.id == event.user_id
+            or message.author.id == self.bot.user.id
+            or event.member.is_bot
+        ):
             return await message.remove_reaction(emoji="⭐", user=message.author)
 
         starred_message_model = await models.StarredMessage.get_or_none(

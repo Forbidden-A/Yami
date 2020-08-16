@@ -35,7 +35,7 @@ def main():
             logger=logger,
             stateless=False,
             logging_level=logging.WARNING,
-            intents=hikari.Intents.ALL
+            intents=hikari.Intents.ALL,
         )
         logger.setLevel(logging.INFO)
         bot.load_extensions()

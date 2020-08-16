@@ -13,7 +13,7 @@ def display_time(seconds: typing.Union[int, float], granularity=4):
         ("days", 0x15180),
         ("hours", 0xE10),
         ("minutes", 0x3C),
-        ("seconds", 0x1)
+        ("seconds", 0x1),
     )
     for name, count in intervals:
         value = seconds // count

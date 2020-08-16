@@ -69,7 +69,7 @@ modules = _ModuleDict(
         "datetime": maybe_import("datetime"),
         "hikari": maybe_import("hikari"),
         "lightbulb": maybe_import("lightbulb"),
-        "PIL": maybe_import("PIL")
+        "PIL": maybe_import("PIL"),
     }
 )
 
@@ -119,7 +119,7 @@ class SuperUser(Plugin):
                     "guild": self.bot.cache.get_guild(context.guild_id),
                     "guild_id": context.guild_id,
                     "message": context.message,
-                    "_": self.last_result
+                    "_": self.last_result,
                 }
 
                 env.update(globals())
@@ -137,8 +137,14 @@ class SuperUser(Plugin):
                 self.logger.removeHandler(stream_handler)
 
         stream.seek(0)
-        lines = "\n".join(stream.readlines()).replace(self.bot._token, "~TOKEN~").replace("`", "´")
-        paginator = EmbedPaginator(max_lines=27, prefix="```diff\n", suffix="```", max_chars=1048)
+        lines = (
+            "\n".join(stream.readlines())
+            .replace(self.bot._token, "~TOKEN~")
+            .replace("`", "´")
+        )
+        paginator = EmbedPaginator(
+            max_lines=27, prefix="```diff\n", suffix="```", max_chars=1048
+        )
 
         @paginator.embed_factory()
         def make_page(index, page):
@@ -146,14 +152,16 @@ class SuperUser(Plugin):
                 title=f"Executed in {(datetime.now(tz=timezone.utc) - start).total_seconds() * 1000:.2f}ms",
                 colour=0x58EF92 if success else 0xE74C3C,
                 description=f"Result: {page}",
-                timestamp=datetime.now(tz=timezone.utc)
+                timestamp=datetime.now(tz=timezone.utc),
             ).set_footer(
                 text=f"#{index}/{len(paginator)}, Requested by {name(context)}",
-                icon=context.author.avatar
+                icon=context.author.avatar,
             )
 
         paginator.add_line(
-            f"*** Python {platform.python_version()} - Hikari {hikari.__version__} - lightbulb {lightbulb.__version__}\n" + lines)
+            f"*** Python {platform.python_version()} - Hikari {hikari.__version__} - lightbulb {lightbulb.__version__}\n"
+            + lines
+        )
 
         navigator = EmbedNavigator(pages=paginator.build_pages())
         await navigator.run(context)
@@ -168,7 +176,7 @@ class SuperUser(Plugin):
 
         with stack:
             process = await asyncio.create_subprocess_shell(
-                body, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+                body, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
             )
             stdout, stderr = await process.communicate()
             stream.write(stdout.decode())
@@ -176,9 +184,15 @@ class SuperUser(Plugin):
 
         stream.write(f"\n- Return code {process.returncode}")
         stream.seek(0)
-        lines = "\n".join(stream.readlines()).replace(self.bot._token, "~TOKEN~").replace("`", "´")
+        lines = (
+            "\n".join(stream.readlines())
+            .replace(self.bot._token, "~TOKEN~")
+            .replace("`", "´")
+        )
 
-        paginator = EmbedPaginator(max_lines=27, prefix='```diff\n', suffix='```', max_chars=1048)
+        paginator = EmbedPaginator(
+            max_lines=27, prefix="```diff\n", suffix="```", max_chars=1048
+        )
 
         @paginator.embed_factory()
         def make_page(index, page):
@@ -186,14 +200,16 @@ class SuperUser(Plugin):
                 title=f"Executed in {(datetime.now(tz=timezone.utc) - start).total_seconds() * 1000:.2f}ms",
                 colour=0x58EF92 if process.returncode == 0 else 0xE74C3C,
                 description=f"Result: {page}",
-                timestamp=datetime.now(tz=timezone.utc)
+                timestamp=datetime.now(tz=timezone.utc),
             ).set_footer(
                 text=f"#{index}/{len(paginator)}, Requested by {name(context)}",
-                icon=context.author.avatar
+                icon=context.author.avatar,
             )
 
         paginator.add_line(
-            f"*** Python {platform.python_version()} - Hikari {hikari.__version__} - lightbulb {lightbulb.__version__}\n" + lines)
+            f"*** Python {platform.python_version()} - Hikari {hikari.__version__} - lightbulb {lightbulb.__version__}\n"
+            + lines
+        )
 
         navigator = EmbedNavigator(pages=paginator.build_pages())
         await navigator.run(context)
@@ -256,7 +272,7 @@ class SuperUser(Plugin):
         self.bot.rest.create_message = self.bot.send
 
     @checks.owner_only()
-    @commands.command(aliases=['p'])
+    @commands.command(aliases=["p"])
     async def panic(self, context: Context, arg=""):
         if "-h" in arg:
             await context.reply("Panicking hard!")

@@ -23,7 +23,9 @@ class Info(Plugin):
     @info.command()
     async def bot(self, context: Context):
         """Credits to Yoda#9999"""
-        uptime = display_time_from_delta(datetime.now(tz=timezone.utc) - self.bot.start_time)
+        uptime = display_time_from_delta(
+            datetime.now(tz=timezone.utc) - self.bot.start_time
+        )
 
         embed = hikari.Embed(
             colour=0x3498DB,
@@ -42,7 +44,9 @@ class Info(Plugin):
         )
         embed.add_field(name="Hikari Version", value=hikari.__version__, inline=False)
         embed.add_field(name="Aiohttp Version", value=aiohttp.__version__, inline=False)
-        embed.add_field(name="MultiDict Version", value=multidict.__version__, inline=False)
+        embed.add_field(
+            name="MultiDict Version", value=multidict.__version__, inline=False
+        )
         embed.add_field(
             name="Lightbulb Version", value=lightbulb.__version__, inline=False
         )

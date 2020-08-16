@@ -22,12 +22,16 @@ class Admin(Plugin):
     @owner_only()
     @guild_only()
     @settings.command(name="setstarboard", aliases=["ssb"])
-    async def set_starboard(self, context: Context, channel: text_channel_converter = None):
+    async def set_starboard(
+        self, context: Context, channel: text_channel_converter = None
+    ):
         channel: GuildTextChannel = channel
         guild = await models.Guild.get(id=context.guild_id)
         guild.starboard = channel.id if channel else None
         await guild.save()
-        await context.reply(f"Starboard successfully set to {f'<#{channel.id}>' if channel else None}.")
+        await context.reply(
+            f"Starboard successfully set to {f'<#{channel.id}>' if channel else None}."
+        )
 
     @owner_only()
     @guild_only()
