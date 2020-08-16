@@ -9,7 +9,7 @@ from lightbulb import commands
 from lightbulb.context import Context
 
 from Yami.subclasses.plugin import Plugin
-from Yami.utils.time import display_time_from_datetimes, display_time_from_delta
+from Yami.utils.time import display_time_from_delta
 
 
 class Info(Plugin):

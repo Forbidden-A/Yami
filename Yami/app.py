@@ -28,7 +28,15 @@ def main():
     rest.RESTClientImpl = type("REST", (RESTClientImpl,), {})  # unslot
     logger = logging.getLogger("Yami")
     if token := os.getenv("YAMI_TOKEN"):
-        bot = Bot(prefix=get_prefix, token=token, insensitive_commands=True, logger=logger, stateless=False, logging_level=logging.WARNING)
+        bot = Bot(
+            prefix=get_prefix,
+            token=token,
+            insensitive_commands=True,
+            logger=logger,
+            stateless=False,
+            logging_level=logging.WARNING,
+            intents=hikari.Intents.ALL
+        )
         logger.setLevel(logging.INFO)
         bot.load_extensions()
         bot.run()
