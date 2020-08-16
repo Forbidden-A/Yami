@@ -25,7 +25,7 @@ def maybe_import(lib):
     try:
         module = importlib.import_module(lib)
         return module
-    except Exception as ex:
+    except Exception:
         return None
 
 
@@ -74,6 +74,7 @@ modules = _ModuleDict(
 )
 
 
+# noinspection PyProtectedMember
 class SuperUser(Plugin):
     def __init__(self, bot):
         super().__init__(bot)
@@ -214,6 +215,7 @@ class SuperUser(Plugin):
         navigator = EmbedNavigator(pages=paginator.build_pages())
         await navigator.run(context)
 
+    # noinspection PyUnusedLocal
     @checks.owner_only()
     @commands.command(aliases=["sh", "shell", "exec", "eval", "evaluate"])
     async def execute(self, context: Context, *, content):
@@ -256,6 +258,7 @@ class SuperUser(Plugin):
                     context.invoked_with,
                     context.command,
                 )
+                # noinspection PyTypeChecker
                 command_args = self.bot.resolve_arguments(
                     message_event.message, context.prefix
                 )[1:]
@@ -282,6 +285,7 @@ class SuperUser(Plugin):
         await context.reply("Panicking..")
         self.bot.remove_plugin(self.name)
 
+    # noinspection PyUnusedLocal
     @checks.owner_only()
     @commands.command(aliases=["restart"])
     async def shutdown(self, context: Context):
