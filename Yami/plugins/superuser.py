@@ -17,6 +17,7 @@ from lightbulb.utils import EmbedPaginator, EmbedNavigator
 from tortoise import Tortoise
 
 from Yami.subclasses.plugin import Plugin
+from Yami.utils.text import name
 
 
 def maybe_import(lib):
@@ -105,7 +106,6 @@ class SuperUser(Plugin):
         stack.enter_context(contextlib.redirect_stdout(stream))
         stack.enter_context(contextlib.redirect_stderr(stream))
         stream_handler = logging.StreamHandler(stream)
-        stream_handler.setFormatter(self.bot.logger.handlers[0].formatter)
         self.logger.addHandler(stream_handler)
         with stack:
             try:
@@ -148,12 +148,12 @@ class SuperUser(Plugin):
                 description=f"Result: {page}",
                 timestamp=datetime.now(tz=timezone.utc)
             ).set_footer(
-                text=f"#{index}/{len(paginator)}, Requested by {context.message.member.nickname or context.author.username if context.member else context.author.username}",
+                text=f"#{index}/{len(paginator)}, Requested by {name(context)}",
                 icon=context.author.avatar
             )
 
         paginator.add_line(
-            f"*** Python {platform.version()} - Hikari {hikari.__version__} - lightbulb {lightbulb.__version__}\n" + lines)
+            f"*** Python {platform.python_version()} - Hikari {hikari.__version__} - lightbulb {lightbulb.__version__}\n" + lines)
 
         navigator = EmbedNavigator(pages=paginator.build_pages())
         await navigator.run(context)
@@ -188,12 +188,12 @@ class SuperUser(Plugin):
                 description=f"Result: {page}",
                 timestamp=datetime.now(tz=timezone.utc)
             ).set_footer(
-                text=f"#{index}/{len(paginator)}, Requested by {context.message.member.nickname or context.author.username if context.member else context.author.username}",
+                text=f"#{index}/{len(paginator)}, Requested by {name(context)}",
                 icon=context.author.avatar
             )
 
         paginator.add_line(
-            f"*** Python {platform.version()} - Hikari {hikari.__version__} - lightbulb {lightbulb.__version__}\n" + lines)
+            f"*** Python {platform.python_version()} - Hikari {hikari.__version__} - lightbulb {lightbulb.__version__}\n" + lines)
 
         navigator = EmbedNavigator(pages=paginator.build_pages())
         await navigator.run(context)

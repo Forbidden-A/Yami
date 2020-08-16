@@ -1,6 +1,7 @@
 import logging
 import os
 import traceback
+from datetime import datetime, timezone
 
 import hikari
 import lightbulb
@@ -14,6 +15,7 @@ class Bot(lightbulb.Bot):
         self.user: typing.Optional[hikari.User] = None
         self.logger = logger or logging.getLogger(__name__)
         self.send = self.rest.create_message
+        self.start_time = datetime.now(tz=timezone.utc)
 
     async def initialize_database(self):
         if db_url := os.getenv("YAMI_DB_URL"):

@@ -26,13 +26,10 @@ def main():
     os.chdir(dir_path)
 
     rest.RESTClientImpl = type("REST", (RESTClientImpl,), {})  # unslot
-
-    with open('log_config.yml', 'r') as cfg:
-        log_config = yaml.safe_load(cfg.read())
-        logging.config.dictConfig(log_config)
     logger = logging.getLogger("Yami")
     if token := os.getenv("YAMI_TOKEN"):
-        bot = Bot(prefix=get_prefix, token=token, insensitive_commands=True, logger=logger, stateless=False)
+        bot = Bot(prefix=get_prefix, token=token, insensitive_commands=True, logger=logger, stateless=False, logging_level=logging.WARNING)
+        logger.setLevel(logging.INFO)
         bot.load_extensions()
         bot.run()
     else:
