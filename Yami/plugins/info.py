@@ -28,13 +28,14 @@ class Info(Plugin):
         embed = hikari.Embed(
             colour=0x3498DB,
             description=(
-                "Yami is a discord bot made using [Hikari](https://nekokatt.gitlab.io/hikari/) and [Lightbulb](https://tandemdude.gitlab.io/lightbulb/)\n"
+                "Yami is a discord bot made using [Hikari](https://nekokatt.github.io/hikari/) and [Lightbulb](https://tandemdude.gitlab.io/lightbulb/)\n"
                 "[Hikari Discord](https://discord.com/invite/Jx4cNGG)\n"
                 "[Hikari Docs](https://nekokatt.gitlab.io/hikari/hikari/index.html)\n"
-                "[Hikari Gitlab](https://gitlab.com/nekokatt/hikari)\n"
+                "[Hikari Github](https://github.com/nekokatt/hikari)\n"
                 "[Hikari PyPi](https://pypi.org/project/hikari/)\n"
-                "[Lightbulb](https://tandemdude.gitlab.io/lightbulb/)\n"
                 "[Lightbulb Docs](https://tandemdude.gitlab.io/lightbulb/)\n"
+                "[Lightbulb Gitlab](https://gitlab.com/tandemdude/lightbulb)\n"
+                "[Lightbulb PyPi](https://pypi.org/project/hikari-lightbulb/)\n"
                 "[Yami](https://github.com/Forbidden-A/Yami)"
             ),
             timestamp=datetime.now(tz=timezone.utc),
