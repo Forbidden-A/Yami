@@ -25,4 +25,5 @@ jobs:
       uses: RojerGS/python-black-check@1.0.1
       with:
         # File or directory to run black on.
-        path: Yami
+        path: .
+        line-length: 88
