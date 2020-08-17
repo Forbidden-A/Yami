@@ -45,8 +45,8 @@ def main():
         @checks.owner_only()
         @bot.command(aliases=["restart"])
         async def shutdown(context: Context):
-            asyncio.create_task(bot.close())
             await context.reply("Ja, matane")
+            asyncio.create_task(bot.close())
 
         bot.run()
     else:
