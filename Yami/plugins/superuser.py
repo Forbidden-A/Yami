@@ -140,8 +140,8 @@ class SuperUser(Plugin):
         stream.seek(0)
         lines = (
             "\n".join(stream.readlines())
-            .replace(self.bot._token, "~TOKEN~")
-            .replace("`", "´")
+                .replace(self.bot._token, "~TOKEN~")
+                .replace("`", "´")
         )
         paginator = EmbedPaginator(
             max_lines=27, prefix="```diff\n", suffix="```", max_chars=1048
@@ -187,8 +187,8 @@ class SuperUser(Plugin):
         stream.seek(0)
         lines = (
             "\n".join(stream.readlines())
-            .replace(self.bot._token, "~TOKEN~")
-            .replace("`", "´")
+                .replace(self.bot._token, "~TOKEN~")
+                .replace("`", "´")
         )
 
         paginator = EmbedPaginator(
@@ -277,8 +277,9 @@ class SuperUser(Plugin):
     @checks.owner_only()
     @commands.command(aliases=["p"])
     async def panic(self, context: Context):
-        await context.reply("Panicking..")
+        m = await context.reply("Panicking..")
         self.bot.remove_plugin(self.name)
+        await m.edit("Panicked")
 
 
 def load(bot):
