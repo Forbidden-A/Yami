@@ -8,7 +8,6 @@ import hikari
 from hikari.impl import rest
 from hikari.impl.rest import RESTClientImpl
 from lightbulb import checks, Context
-from tortoise import Tortoise
 
 from Yami import models
 from Yami.subclasses.bot import Bot
@@ -48,7 +47,7 @@ def main():
             await context.reply("Ja, matane")
             asyncio.create_task(bot.close())
 
-        bot.run(close_loop=False)
+        bot.run()
     else:
         logger.error(
             "Please set an environment variable called `YAMI_TOKEN` and set its value to the bot's token."
