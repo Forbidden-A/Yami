@@ -44,9 +44,9 @@ def main():
 
         @checks.owner_only()
         @bot.command(aliases=["restart"])
-        async def shutdown(self, context: Context):
-            await Tortoise.close_connections()
-            asyncio.create_task(self.bot.close())
+        async def shutdown(context: Context):
+            asyncio.create_task(bot.close())
+            await context.reply("Ja, matane")
 
         bot.run()
     else:
