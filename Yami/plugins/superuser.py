@@ -140,8 +140,8 @@ class SuperUser(Plugin):
         stream.seek(0)
         lines = (
             "\n".join(stream.readlines())
-                .replace(self.bot._token, "~TOKEN~")
-                .replace("`", "´")
+            .replace(self.bot._token, "~TOKEN~")
+            .replace("`", "´")
         )
         paginator = EmbedPaginator(
             max_lines=27, prefix="```diff\n", suffix="```", max_chars=1048
