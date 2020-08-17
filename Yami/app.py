@@ -1,12 +1,14 @@
+import asyncio
 import logging
 import logging.config
 import os
 import typing
 
 import hikari
-import yaml
 from hikari.impl import rest
 from hikari.impl.rest import RESTClientImpl
+from lightbulb import checks, Context
+from tortoise import Tortoise
 
 from Yami import models
 from Yami.subclasses.bot import Bot
@@ -39,6 +41,12 @@ def main():
         )
         logger.setLevel(logging.INFO)
         bot.load_extensions()
+
+        @checks.owner_only()
+        @bot.command(aliases=["restart"])
+        async def shutdown(self, context: Context):
+            await Tortoise.close_connections()
+            asyncio.create_task(self.bot.close())
         bot.run()
     else:
         logger.error(

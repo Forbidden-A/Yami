@@ -8,13 +8,13 @@ import platform
 import re
 import textwrap
 import traceback
+import typing
 from datetime import timezone, datetime
+
 import hikari
 import lightbulb
-import typing
 from lightbulb import Context, commands, checks
 from lightbulb.utils import EmbedPaginator, EmbedNavigator
-from tortoise import Tortoise
 
 from Yami.subclasses.plugin import Plugin
 from Yami.utils.text import name
@@ -140,8 +140,8 @@ class SuperUser(Plugin):
         stream.seek(0)
         lines = (
             "\n".join(stream.readlines())
-            .replace(self.bot._token, "~TOKEN~")
-            .replace("`", "´")
+                .replace(self.bot._token, "~TOKEN~")
+                .replace("`", "´")
         )
         paginator = EmbedPaginator(
             max_lines=27, prefix="```diff\n", suffix="```", max_chars=1048
@@ -187,8 +187,8 @@ class SuperUser(Plugin):
         stream.seek(0)
         lines = (
             "\n".join(stream.readlines())
-            .replace(self.bot._token, "~TOKEN~")
-            .replace("`", "´")
+                .replace(self.bot._token, "~TOKEN~")
+                .replace("`", "´")
         )
 
         paginator = EmbedPaginator(
@@ -276,21 +276,9 @@ class SuperUser(Plugin):
 
     @checks.owner_only()
     @commands.command(aliases=["p"])
-    async def panic(self, context: Context, arg=""):
-        if "-h" in arg:
-            await context.reply("Panicking hard!")
-            await Tortoise.close_connections()
-            exit(0)
-
+    async def panic(self, context: Context):
         await context.reply("Panicking..")
         self.bot.remove_plugin(self.name)
-
-    # noinspection PyUnusedLocal
-    @checks.owner_only()
-    @commands.command(aliases=["restart"])
-    async def shutdown(self, context: Context):
-        await Tortoise.close_connections()
-        exit(0)
 
 
 def load(bot):
