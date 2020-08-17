@@ -47,6 +47,7 @@ def main():
         async def shutdown(self, context: Context):
             await Tortoise.close_connections()
             asyncio.create_task(self.bot.close())
+
         bot.run()
     else:
         logger.error(
