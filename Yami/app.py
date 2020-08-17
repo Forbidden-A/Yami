@@ -48,7 +48,7 @@ def main():
             await context.reply("Ja, matane")
             asyncio.create_task(bot.close())
 
-        bot.run()
+        bot.run(close_loop=False)
     else:
         logger.error(
             "Please set an environment variable called `YAMI_TOKEN` and set its value to the bot's token."

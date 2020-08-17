@@ -50,3 +50,7 @@ class Bot(lightbulb.Bot):
                         )
                     )
                 )
+
+    async def close(self) -> None:
+        await Tortoise.close_connections()
+        await super().close()
