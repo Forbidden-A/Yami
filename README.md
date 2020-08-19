@@ -1,7 +1,8 @@
 # Yami
-an example discord bot written using [Hikari](https://github.com/nekokatt/hikari) and [Lightbulb](https://gitlab.com/tandemdude/lightbulb)
+An example discord bot written using [Hikari](https://github.com/nekokatt/hikari) and [Lightbulb](https://gitlab.com/tandemdude/lightbulb)
 =================
-useful resources:
-  - [Hikari Docs](https://nekokatt.github.io/hikari/hikari/index.html)
-  - [Lightbulb Docs](https://tandemdude.gitlab.io/lightbulb/)
-  - [Official Discord server](https://discord.com/invite/Jx4cNGG)
+* Useful resources
+  * [Hikari Documentation](https://nekokatt.github.io/hikari/hikari/index.html)
+  * [Lightbulb Documentation](https://tandemdude.gitlab.io/lightbulb/)
+  * [Official Hikari Discord server](https://discord.com/invite/Jx4cNGG)
+  * [Python Documentation](https://docs.python.org/3/)
