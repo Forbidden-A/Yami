@@ -22,9 +22,7 @@ class Admin(Plugin):
     @owner_only()
     @guild_only()
     @settings.command(name="starboard", aliases=["sb"])
-    async def starboard(
-            self, context: Context
-    ):
+    async def starboard(self, context: Context):
         guild = await models.Guild.get(id=context.guild_id)
         await context.reply(
             f"Starboard is currently set to {f'<#{guild.starboard}>' if guild.starboard else None}."
