@@ -271,7 +271,6 @@ class SuperUser(Plugin):
             pass
         except asyncio.TimeoutError:
             pass
-        self.bot.rest.create_message = self.bot.send
 
     @checks.owner_only()
     @commands.command(aliases=["p"])
