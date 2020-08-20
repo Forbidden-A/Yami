@@ -7,6 +7,23 @@ from Yami.subclasses.bot import Bot
 from Yami.subclasses.plugin import Plugin
 
 
+def get_video_id(query: str) -> str:
+    if "v=" in query:
+        video_id: str = query.split("v=")[1]
+
+        if "&" in video_id:
+            ampersand_position = video_id.index("&")
+
+            if ampersand_position != -1:
+                return video_id[:ampersand_position]
+            else:
+                return video_id.rstrip("&")
+        else:
+            return video_id
+    else:
+        return query
+
+
 class Fun(Plugin):
     def __init__(self, bot: Bot):
         super().__init__(bot)
@@ -14,16 +31,8 @@ class Fun(Plugin):
     @commands.command()
     async def thumbnail(self, context: Context, query):
 
-        if "v=" in query:
-            video_id: str = query.split("v=")[1]
+        video_id = get_video_id(query)
 
-            if "&" in video_id:
-                ampersand_position = video_id.index("&")
-
-                if ampersand_position != -1:
-                    video_id = video_id[:ampersand_position]
-        else:
-            video_id = query
         async with aiohttp.request(
             "get", f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg"
         ) as resp:
