@@ -101,7 +101,7 @@ class Events(Plugin):
 
         else:
 
-            if stars >= 2:
+            if stars >= guild.stars:
 
                 embed, content = await self.get_starboard_embed(
                     message, guild.id, datetime.now(timezone.utc), stars
