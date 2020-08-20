@@ -2,8 +2,14 @@ import typing
 from datetime import datetime, timezone
 
 import hikari
-from hikari import (GuildAvailableEvent, NotFoundError, ReactionAddEvent,
-                    ReactionDeleteEvent, ShardReadyEvent, StartingEvent)
+from hikari import (
+    GuildAvailableEvent,
+    NotFoundError,
+    ReactionAddEvent,
+    ReactionDeleteEvent,
+    ShardReadyEvent,
+    StartingEvent,
+)
 from lightbulb import plugins
 
 from Yami import models
