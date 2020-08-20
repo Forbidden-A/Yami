@@ -1,7 +1,7 @@
 import io
 
 import aiohttp
-from lightbulb import commands, Context
+from lightbulb import Context, commands
 
 from Yami.subclasses.bot import Bot
 from Yami.subclasses.plugin import Plugin

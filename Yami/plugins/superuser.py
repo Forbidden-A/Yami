@@ -9,12 +9,12 @@ import re
 import textwrap
 import traceback
 import typing
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 import hikari
 import lightbulb
-from lightbulb import Context, commands, checks
-from lightbulb.utils import EmbedPaginator, EmbedNavigator
+from lightbulb import Context, checks, commands
+from lightbulb.utils import EmbedNavigator, EmbedPaginator
 
 from Yami.subclasses.plugin import Plugin
 from Yami.utils.text import name

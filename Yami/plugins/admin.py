@@ -1,5 +1,5 @@
 from hikari import GuildTextChannel
-from lightbulb import commands, owner_only, guild_only
+from lightbulb import commands, guild_only, owner_only
 from lightbulb.context import Context
 from lightbulb.converters import text_channel_converter
 

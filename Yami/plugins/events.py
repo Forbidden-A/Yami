@@ -3,12 +3,12 @@ from datetime import datetime, timezone
 
 import hikari
 from hikari import (
-    StartingEvent,
-    ShardReadyEvent,
     GuildAvailableEvent,
-    ReactionDeleteEvent,
-    ReactionAddEvent,
     NotFoundError,
+    ReactionAddEvent,
+    ReactionDeleteEvent,
+    ShardReadyEvent,
+    StartingEvent,
 )
 from lightbulb import plugins
 

@@ -1,21 +1,20 @@
 import random
+import typing
 from datetime import datetime, timezone
 
 import hikari
-import typing
-
 import lightbulb
 from lightbulb import (
-    HelpCommand,
-    Context,
-    filter_commands,
-    get_help_text,
     Command,
-    get_command_signature,
+    Context,
     Group,
+    HelpCommand,
+    filter_commands,
+    get_command_signature,
+    get_help_text,
     plugins,
 )
-from lightbulb.utils import EmbedPaginator, EmbedNavigator
+from lightbulb.utils import EmbedNavigator, EmbedPaginator
 
 from Yami.subclasses.plugin import Plugin
 from Yami.utils.text import name

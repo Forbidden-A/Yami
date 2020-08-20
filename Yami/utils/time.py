@@ -1,5 +1,5 @@
 import typing
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
 
 
 def display_time(seconds: typing.Union[int, float], granularity=4):

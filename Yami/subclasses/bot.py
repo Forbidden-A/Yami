@@ -2,11 +2,11 @@ import asyncio
 import logging
 import os
 import traceback
+import typing
 from datetime import datetime, timezone
+
 import hikari
 import lightbulb
-import typing
-
 from tortoise import Tortoise
 
 
