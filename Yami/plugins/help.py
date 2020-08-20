@@ -3,7 +3,6 @@ import typing
 from datetime import datetime, timezone
 
 import hikari
-import lightbulb
 from lightbulb import (
     Command,
     Context,
