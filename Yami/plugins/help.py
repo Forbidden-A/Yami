@@ -3,16 +3,8 @@ import typing
 from datetime import datetime, timezone
 
 import hikari
-from lightbulb import (
-    Command,
-    Context,
-    Group,
-    HelpCommand,
-    filter_commands,
-    get_command_signature,
-    get_help_text,
-    plugins,
-)
+from lightbulb import (Command, Context, Group, HelpCommand, filter_commands,
+                       get_command_signature, get_help_text, plugins)
 from lightbulb.utils import EmbedNavigator, EmbedPaginator
 
 from Yami.subclasses.plugin import Plugin
