@@ -219,15 +219,6 @@ class SuperUser(Plugin):
     @checks.owner_only()
     @commands.command(aliases=["sh", "shell", "exec", "eval", "evaluate"])
     async def execute(self, context: Context, *, content):
-        sent = []
-
-        async def new_send(*args, **kwargs):
-            result = await self.bot.send(*args, **kwargs)
-            sent.append(result) if result.channel_id == context.channel_id else ...
-            return result
-
-        self.bot.rest.create_message = new_send
-
         async def check(event):
             return event.message.id == context.message.id
 
@@ -262,8 +253,16 @@ class SuperUser(Plugin):
                 command_args = self.bot.resolve_arguments(
                     message_event.message, context.prefix
                 )[1:]
-                for message in sent:
-                    await message.delete()
+                channel = self.bot.cache.get_guild_channel(
+                    context.channel_id
+                ) or await self.bot.rest.fetch_channel(context.channel_id)
+                query = (
+                    channel.history()
+                    .filter(lambda m: m.author == self.bot.me)
+                    .take_until(lambda m: m.id < context.message.id)
+                )
+
+                await self.bot.rest.delete_messages(channel, *(await query))
                 # noinspection PyProtectedMember
                 await self.bot._invoke_command(
                     context.command, command_context, command_args

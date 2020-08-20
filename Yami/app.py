@@ -25,8 +25,6 @@ def main():
     # Set path to bot directory
     dir_path = os.path.dirname(os.path.realpath(__file__))
     os.chdir(dir_path)
-
-    rest.RESTClientImpl = type("REST", (RESTClientImpl,), {})  # unslot
     logger = logging.getLogger("Yami")
     if token := os.getenv("YAMI_TOKEN"):
         bot = Bot(

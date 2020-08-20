@@ -15,7 +15,6 @@ class Bot(lightbulb.Bot):
         super().__init__(*args, **kwargs)
         self.user: typing.Optional[hikari.User] = None
         self.logger = logger or logging.getLogger(__name__)
-        self.send = self.rest.create_message
         self.start_time = datetime.now(tz=timezone.utc)
 
     async def initialize_database(self):
