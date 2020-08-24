@@ -144,8 +144,8 @@ class SuperUser(Plugin):
         stream.seek(0)
         lines = (
             "\n".join(stream.readlines())
-                .replace(context.bot._token, "~TOKEN~")
-                .replace("`", "´")
+            .replace(context.bot._token, "~TOKEN~")
+            .replace("`", "´")
         )
         paginator = EmbedPaginator(
             max_lines=27, prefix="```diff\n", suffix="```", max_chars=1048
@@ -191,8 +191,8 @@ class SuperUser(Plugin):
         stream.seek(0)
         lines = (
             "\n".join(stream.readlines())
-                .replace(context.bot._token, "~TOKEN~")
-                .replace("`", "´")
+            .replace(context.bot._token, "~TOKEN~")
+            .replace("`", "´")
         )
 
         paginator = EmbedPaginator(
@@ -261,7 +261,11 @@ class SuperUser(Plugin):
                 channel: TextChannel = context.bot.cache.get_guild_channel(
                     context.channel_id
                 ) or await context.bot.rest.fetch_channel(context.channel_id)
-                history = channel.history(after=context.message_id).filter(lambda m: m.author.id == context.bot.me.id).take_until(lambda m: m.id < context.message.id)
+                history = (
+                    channel.history(after=context.message_id)
+                    .filter(lambda m: m.author.id == context.bot.me.id)
+                    .take_until(lambda m: m.id < context.message.id)
+                )
                 await self.bot.rest.delete_messages(channel, *(await history))
                 # noinspection PyProtectedMember
                 await context.bot._invoke_command(
@@ -288,7 +292,7 @@ class SuperUser(Plugin):
     @checks.owner_only()
     @commands.command(aliases=["showcode", "codefor", "code", "source"])
     async def getcode(
-            self, context: Context, child: command_or_plugin_converter = None
+        self, context: Context, child: command_or_plugin_converter = None
     ):
         child: typing.Union[plugins.Plugin, commands.Command] = child or context.command
         if isinstance(child, plugins.Plugin):
@@ -315,12 +319,17 @@ class SuperUser(Plugin):
         await navigator.run(context)
 
     @checks.owner_only()
-    @commands.command(name="selfclean", aliases=['sclean', 'sclear'])
+    @commands.command(name="selfclean", aliases=["sclean", "sclear"])
     async def self_clean(self, context: Context, amount: int = 30):
         # noinspection PyTypeChecker
         channel: TextChannel = context.bot.cache.get_guild_channel(
-            context.channel_id) or await context.bot.rest.fetch_channel(context.channel_id)
-        history = channel.history(before=context.message_id).filter(lambda m: m.author.id == context.bot.me.id).limit(amount)
+            context.channel_id
+        ) or await context.bot.rest.fetch_channel(context.channel_id)
+        history = (
+            channel.history(before=context.message_id)
+            .filter(lambda m: m.author.id == context.bot.me.id)
+            .limit(amount)
+        )
 
         async def delete(m):
             await m.delete()
