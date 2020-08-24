@@ -16,7 +16,7 @@ from lightbulb import (
 from lightbulb.utils import EmbedNavigator, EmbedPaginator
 
 from Yami.subclasses.plugin import Plugin
-from Yami.utils.text import name
+from Yami.utils.text import ctx_name
 
 
 class MyHelpCommand(HelpCommand):
@@ -62,8 +62,8 @@ class MyHelpCommand(HelpCommand):
                     timestamp=datetime.now(tz=timezone.utc),
                 )
                 .set_footer(
-                    text=f"#{index}/{len(paginator)}, Requested by {name(context)}",
-                    icon=context.author.avatar,
+                    text=f"#{index}/{len(paginator)}, Requested by {ctx_name(context)}",
+                    icon=context.author.avatar_url,
                 )
                 .add_field(name="**Available Commands**", value=page)
             )
@@ -83,11 +83,11 @@ class MyHelpCommand(HelpCommand):
                 timestamp=datetime.now(tz=timezone.utc),
             )
             .set_footer(
-                text=f"Requested by {name(context)}", icon=context.author.avatar
+                text=f"Requested by {ctx_name(context)}", icon=context.author.avatar_url
             )
             .add_field(
                 name="**Usage**",
-                value=("```md\n" f"{get_command_signature(command)}" "\n```"),
+                value="```md\n" f"{get_command_signature(command)}" "\n```",
                 inline=False,
             )
         )
@@ -114,11 +114,11 @@ class MyHelpCommand(HelpCommand):
                 timestamp=datetime.now(tz=timezone.utc),
             )
             .set_footer(
-                text=f"Requested by {name(context)}", icon=context.author.avatar
+                text=f"Requested by {ctx_name(context)}", icon=context.author.avatar_url
             )
             .add_field(
                 name="**Usage**",
-                value=("```md\n" f"{get_command_signature(group)}" "\n```"),
+                value="```md\n" f"{get_command_signature(group)}" "\n```",
                 inline=False,
             )
         )
@@ -147,7 +147,9 @@ class MyHelpCommand(HelpCommand):
             description=f"**Help for `{plugin.name}`**",
             colour=random.randint(0, 0xFFFFFF),
             timestamp=datetime.now(tz=timezone.utc),
-        ).set_footer(text=f"Requested by {name(context)}", icon=context.author.avatar)
+        ).set_footer(
+            text=f"Requested by {ctx_name(context)}", icon=context.author.avatar_url
+        )
         if help_text := get_help_text(plugin):
             embed.add_field(
                 name="**Description**", value=f"```md\n{help_text}\n```", inline=False,

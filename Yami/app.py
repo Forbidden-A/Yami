@@ -38,13 +38,6 @@ def main():
         )
         logger.setLevel(logging.INFO)
         bot.load_extensions()
-
-        @checks.owner_only()
-        @bot.command(aliases=["restart"])
-        async def shutdown(context: Context):
-            await context.reply("Ja, matane")
-            asyncio.create_task(bot.close())
-
         bot.run()
     else:
         logger.error(

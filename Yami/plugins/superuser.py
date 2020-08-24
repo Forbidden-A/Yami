@@ -2,6 +2,7 @@ import asyncio
 import collections
 import contextlib
 import importlib
+import inspect
 import io
 import logging
 import platform
@@ -10,14 +11,16 @@ import textwrap
 import traceback
 import typing
 from datetime import datetime, timezone
+from random import randint
 
 import hikari
 import lightbulb
-from lightbulb import Context, checks, commands
+from lightbulb import Context, checks, commands, plugins
 from lightbulb.utils import EmbedNavigator, EmbedPaginator
 
+from Yami.converters.command import command_or_plugin_converter
 from Yami.subclasses.plugin import Plugin
-from Yami.utils.text import name
+from Yami.utils.text import ctx_name
 
 
 def maybe_import(lib):
@@ -114,10 +117,10 @@ class SuperUser(Plugin):
                     "self": self,
                     "ctx": context,
                     "channel_id": context.channel_id,
-                    "channel": self.bot.cache.get_guild_channel(context.channel_id),
+                    "channel": context.bot.cache.get_guild_channel(context.channel_id),
                     "author": context.author,
                     "member": context.member,
-                    "guild": self.bot.cache.get_guild(context.guild_id),
+                    "guild": context.bot.cache.get_guild(context.guild_id),
                     "guild_id": context.guild_id,
                     "message": context.message,
                     "_": self.last_result,
@@ -127,7 +130,7 @@ class SuperUser(Plugin):
                 env.update(locals())
                 env.update(modules)
                 exec(body, env)
-                self.last_result = await env["__invoke__"](self.bot, context)
+                self.last_result = await env["__invoke__"](context.bot, context)
                 stream.write(f"- Returned: {self.last_result!r}")
             except SyntaxError as e:
                 stream.write(self.get_syntax_error(e))
@@ -140,7 +143,7 @@ class SuperUser(Plugin):
         stream.seek(0)
         lines = (
             "\n".join(stream.readlines())
-            .replace(self.bot._token, "~TOKEN~")
+            .replace(context.bot._token, "~TOKEN~")
             .replace("`", "´")
         )
         paginator = EmbedPaginator(
@@ -155,8 +158,8 @@ class SuperUser(Plugin):
                 description=f"Result: {page}",
                 timestamp=datetime.now(tz=timezone.utc),
             ).set_footer(
-                text=f"#{index}/{len(paginator)}, Requested by {name(context)}",
-                icon=context.author.avatar,
+                text=f"#{index}/{len(paginator)}, Requested by {ctx_name(context)}",
+                icon=context.author.avatar_url,
             )
 
         paginator.add_line(
@@ -187,7 +190,7 @@ class SuperUser(Plugin):
         stream.seek(0)
         lines = (
             "\n".join(stream.readlines())
-            .replace(self.bot._token, "~TOKEN~")
+            .replace(context.bot._token, "~TOKEN~")
             .replace("`", "´")
         )
 
@@ -203,8 +206,8 @@ class SuperUser(Plugin):
                 description=f"Result: {page}",
                 timestamp=datetime.now(tz=timezone.utc),
             ).set_footer(
-                text=f"#{index}/{len(paginator)}, Requested by {name(context)}",
-                icon=context.author.avatar,
+                text=f"#{index}/{len(paginator)}, Requested by {ctx_name(context)}",
+                icon=context.author.avatar_url,
             )
 
         paginator.add_line(
@@ -219,7 +222,7 @@ class SuperUser(Plugin):
     @checks.owner_only()
     @commands.command(aliases=["sh", "shell", "exec", "eval", "evaluate"])
     async def execute(self, context: Context, *, content):
-        async def check(event):
+        def check(event):
             return event.message.id == context.message.id
 
         await self.execute_in_shell(
@@ -238,33 +241,26 @@ class SuperUser(Plugin):
                 hikari.events.MessageUpdateEvent, timeout=60.0, predicate=check
             )
             if message_event.message.content != context.message.content:
-                new_message = await self.bot.rest.fetch_message(
+                new_message = await context.bot.rest.fetch_message(
                     message_event.message.channel_id, message_event.message.id,
                 )
                 new_message.guild_id = context.guild_id
                 command_context = Context(
-                    self.bot,
+                    context.bot,
                     new_message,
                     context.prefix,
                     context.invoked_with,
                     context.command,
                 )
                 # noinspection PyTypeChecker
-                command_args = self.bot.resolve_arguments(
+                command_args = context.bot.resolve_arguments(
                     message_event.message, context.prefix
                 )[1:]
-                channel = self.bot.cache.get_guild_channel(
+                channel = context.bot.cache.get_guild_channel(
                     context.channel_id
-                ) or await self.bot.rest.fetch_channel(context.channel_id)
-                query = (
-                    channel.history()
-                    .filter(lambda m: m.author == self.bot.me)
-                    .take_until(lambda m: m.id < context.message.id)
-                )
-
-                await self.bot.rest.delete_messages(channel, *(await query))
+                ) or await context.bot.rest.fetch_channel(context.channel_id)
                 # noinspection PyProtectedMember
-                await self.bot._invoke_command(
+                await context.bot._invoke_command(
                     context.command, command_context, command_args
                 )
         except (hikari.ForbiddenError, hikari.NotFoundError):
@@ -276,8 +272,43 @@ class SuperUser(Plugin):
     @commands.command(aliases=["p"])
     async def panic(self, context: Context):
         m = await context.reply("Panicking..")
-        self.bot.remove_plugin(self.name)
+        context.bot.remove_plugin(self.name)
         await m.edit("Panicked")
+
+    @checks.owner_only()
+    @commands.command(aliases=["rst"])
+    async def restart(self, context: Context):
+        await context.reply("Ja, matane")
+        asyncio.create_task(context.bot.close())
+
+    @checks.owner_only()
+    @commands.command(aliases=["showcode", "codefor", "code", "source"])
+    async def getcode(
+        self, context: Context, child: command_or_plugin_converter = None
+    ):
+        child: typing.Union[plugins.Plugin, commands.Command] = child or context.command
+        if isinstance(child, plugins.Plugin):
+            code = inspect.getsource(child.__class__)
+        else:
+            code = inspect.getsource(child._callback)
+        lines = "\n".join([line for line in code.splitlines()]).replace("`", "ˋ")
+        paginator = EmbedPaginator(prefix="```py\n", suffix="```", max_lines=20)
+
+        @paginator.embed_factory()
+        def make_embed(index, page):
+            return hikari.Embed(
+                title=f"Code for {child.name}",
+                description=page,
+                colour=randint(0, 0xFFF),
+                timestamp=datetime.now(tz=timezone.utc),
+            ).set_footer(
+                text=f"#{index}/{len(paginator)}, Requested by {ctx_name(context)}",
+                icon=context.author.avatar_url,
+            )
+
+        paginator.add_line(lines)
+        navigator = EmbedNavigator(paginator.build_pages())
+        await navigator.run(context)
 
 
 def load(bot):
