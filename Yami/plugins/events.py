@@ -9,6 +9,8 @@ from hikari import (
     ReactionDeleteEvent,
     ShardReadyEvent,
     StartingEvent,
+    GuildReactionAddEvent,
+    GuildReactionDeleteEvent,
 )
 from lightbulb import plugins
 
@@ -21,15 +23,16 @@ class Events(Plugin):
     def __init__(self, bot: Bot):
         super(Events, self).__init__(bot)
 
-    @plugins.listener(event_type=StartingEvent)
+    # noinspection PyUnusedLocal
+    @plugins.listener()
     async def on_starting(self, event: StartingEvent):
         await self.bot.initialize_database()
 
-    @plugins.listener(event_type=ShardReadyEvent)
+    @plugins.listener()
     async def on_ready(self, event: ShardReadyEvent):
         self.bot.user = event.my_user
 
-    @plugins.listener(event_type=GuildAvailableEvent)
+    @plugins.listener()
     async def on_guild_join(self, event: GuildAvailableEvent):
         await models.Guild.get_or_create(id=event.guild.id)
 
@@ -44,7 +47,7 @@ class Events(Plugin):
                 colour="#F1C40F",
                 timestamp=created_at,
             )
-            .set_author(name=message.author.username, icon=message.author.avatar)
+            .set_author(name=message.author.username, icon=message.author.avatar_url)
             .set_footer(text=f"#{channel.name}",)
         )
         if message.attachments:
@@ -53,8 +56,8 @@ class Events(Plugin):
 
         return embed, f"⭐ {stars} <#{channel.id}>"
 
-    @plugins.listener(event_type=ReactionAddEvent)
-    async def on_reaction_add(self, event: ReactionAddEvent):
+    @plugins.listener()
+    async def on_reaction_add(self, event: GuildReactionAddEvent):
         guild, _ = await models.Guild.get_or_create(id=event.guild_id)
         if not guild.starboard or not event.emoji == "⭐":
             return
@@ -113,8 +116,8 @@ class Events(Plugin):
                     id=message.id, star_id=starred_message.id, stars=stars
                 )
 
-    @plugins.listener(event_type=ReactionDeleteEvent)
-    async def on_reaction_remove(self, event: ReactionDeleteEvent):
+    @plugins.listener()
+    async def on_reaction_remove(self, event: GuildReactionDeleteEvent):
         guild, _ = await models.Guild.get_or_create(id=event.guild_id)
 
         if not guild.starboard or not event.emoji == "⭐":
