@@ -15,7 +15,7 @@ from random import randint
 
 import hikari
 import lightbulb
-from hikari import TextChannel, messages, iterators
+from hikari import TextChannel
 from lightbulb import Context, checks, commands, plugins
 from lightbulb.utils import EmbedNavigator, EmbedPaginator
 

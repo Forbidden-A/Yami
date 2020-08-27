@@ -5,8 +5,6 @@ import hikari
 from hikari import (
     GuildAvailableEvent,
     NotFoundError,
-    ReactionAddEvent,
-    ReactionDeleteEvent,
     ShardReadyEvent,
     StartingEvent,
     GuildReactionAddEvent,
@@ -38,9 +36,13 @@ class Events(Plugin):
 
     @staticmethod
     async def get_starboard_embed(
-        message: hikari.Message, guild_id, created_at: datetime, stars: int
+        *,
+        message: hikari.Message,
+        guild_id,
+        channel: hikari.GuildTextChannel,
+        created_at: datetime,
+        stars: int,
     ) -> typing.Tuple[hikari.Embed, str]:
-        channel = await message.fetch_channel()
         embed = (
             hikari.Embed(
                 description=f"**[Jump to message!]({message.link.replace('@me', str(guild_id))})**\n\n{message.content}",
@@ -63,9 +65,9 @@ class Events(Plugin):
             return
 
         # noinspection PyTypeChecker
-        starboard: hikari.GuildTextChannel = await self.bot.rest.fetch_channel(
+        starboard: hikari.GuildTextChannel = self.bot.cache.get_guild_channel(
             guild.starboard
-        )
+        ) or await self.bot.rest.fetch_channel(guild.starboard)
 
         message = await self.bot.rest.fetch_message(event.channel_id, event.message_id)
 
@@ -93,8 +95,14 @@ class Events(Plugin):
                 await starred_message_model.delete()
                 return
 
+            # noinspection PyTypeChecker
             embed, content = await self.get_starboard_embed(
-                message, guild.id, starred_message.created_at, stars
+                message=message,
+                guild_id=guild.id,
+                created_at=starred_message.created_at,
+                stars=stars,
+                channel=self.bot.cache.get_guild_channel(message.channel_id)
+                or await message.fetch_channel(),
             )
 
             starred_message_model.stars = stars
@@ -105,9 +113,14 @@ class Events(Plugin):
         else:
 
             if stars >= guild.stars:
-
+                # noinspection PyTypeChecker
                 embed, content = await self.get_starboard_embed(
-                    message, guild.id, datetime.now(timezone.utc), stars
+                    message=message,
+                    guild_id=guild.id,
+                    created_at=datetime.now(timezone.utc),
+                    stars=stars,
+                    channel=self.bot.cache.get_guild_channel(message.channel_id)
+                    or await message.fetch_channel(),
                 )
 
                 starred_message = await starboard.send(embed=embed, content=content)
@@ -150,8 +163,14 @@ class Events(Plugin):
             except NotFoundError:
                 await starred_message_model.delete()
                 return
+            # noinspection PyTypeChecker
             embed, content = await self.get_starboard_embed(
-                message, guild.id, starred_message.created_at, stars
+                message=message,
+                guild_id=guild.id,
+                created_at=starred_message.created_at,
+                stars=stars,
+                channel=self.bot.cache.get_guild_channel(message.channel_id)
+                or await message.fetch_channel(),
             )
             starred_message_model.stars = stars
             await starred_message_model.save()

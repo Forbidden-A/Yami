@@ -57,7 +57,7 @@ class Admin(Plugin):
     async def set_stars(self, context: Context, stars: int):
         if stars > 20 or stars < 1:
             return await context.reply(
-                f"Can't set stars to {stars}, number must be between 20 and 1"
+                f"Can't set stars to {stars}, number must be between 1 and 20"
             )
         guild = await models.Guild.get(id=context.guild_id)
         guild.stars = stars

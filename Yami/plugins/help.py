@@ -164,6 +164,7 @@ class MyHelpCommand(HelpCommand):
         await context.reply(embed=embed)
 
 
+# noinspection PyProtectedMember
 class Help(Plugin):
     def __init__(self, bot):
         super().__init__(bot)

@@ -1,13 +1,9 @@
-import asyncio
 import logging
 import logging.config
 import os
 import typing
 
 import hikari
-from hikari.impl import rest
-from hikari.impl.rest import RESTClientImpl
-from lightbulb import Context, checks
 
 from Yami import models
 from Yami.subclasses.bot import Bot
