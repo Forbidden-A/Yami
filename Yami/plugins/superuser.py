@@ -118,10 +118,13 @@ class SuperUser(Plugin):
                     "self": self,
                     "ctx": context,
                     "channel_id": context.channel_id,
-                    "channel": context.channel,
+                    "channel": context.bot.cache.get_guild_channel(context.guild_id)
+                    or context.bot.cache.get_dm(context.author.id)
+                    if context.guild_id
+                    else None,
                     "author": context.author,
                     "member": context.member,
-                    "guild": context.guild,
+                    "guild": context.bot.cache.get_available_guild(context.guild_id),
                     "guild_id": context.guild_id,
                     "message": context.message,
                     "_": self.last_result,
