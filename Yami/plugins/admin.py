@@ -63,7 +63,8 @@ class Admin(Plugin):
         guild.stars = stars
         await guild.save()
         await context.reply(
-            f"{stars} star{'s' if stars > 1 else ''} is the new amount of stars required for messages to be sent in starboard."
+            f"{stars} star{'s' if stars > 1 else ''} is the new amount of stars required for messages to be sent in "
+            f"starboard. "
         )
 
     @owner_only()

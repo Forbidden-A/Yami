@@ -118,15 +118,14 @@ class SuperUser(Plugin):
                     "self": self,
                     "ctx": context,
                     "channel_id": context.channel_id,
-                    "channel": context.bot.cache.get_guild_channel(context.channel_id),
+                    "channel": context.channel,
                     "author": context.author,
                     "member": context.member,
-                    "guild": context.bot.cache.get_guild(context.guild_id),
+                    "guild": context.guild,
                     "guild_id": context.guild_id,
                     "message": context.message,
                     "_": self.last_result,
                 }
-
                 env.update(globals())
                 env.update(locals())
                 env.update(modules)
@@ -181,7 +180,9 @@ class SuperUser(Plugin):
 
         with stack:
             process = await asyncio.create_subprocess_shell(
-                body, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+                body,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
             )
             stdout, stderr = await process.communicate()
             stream.write(stdout.decode())
@@ -243,7 +244,8 @@ class SuperUser(Plugin):
             )
             if message_event.message.content != context.message.content:
                 new_message = await context.bot.rest.fetch_message(
-                    message_event.message.channel_id, message_event.message.id,
+                    message_event.message.channel_id,
+                    message_event.message.id,
                 )
                 new_message.guild_id = context.guild_id
                 command_context = Context(
@@ -254,9 +256,9 @@ class SuperUser(Plugin):
                     context.command,
                 )
                 # noinspection PyTypeChecker
-                command_args = context.bot.resolve_arguments(
+                command_args, kwargs = context.bot.resolve_args_for_command(
                     message_event.message, context.prefix
-                )[1:]
+                )
                 # noinspection PyTypeChecker
                 channel: TextChannel = context.bot.cache.get_guild_channel(
                     context.channel_id
@@ -269,7 +271,7 @@ class SuperUser(Plugin):
                 await self.bot.rest.delete_messages(channel, *(await history))
                 # noinspection PyProtectedMember
                 await context.bot._invoke_command(
-                    context.command, command_context, command_args
+                    context.command, command_context, command_args, kwargs
                 )
         except (hikari.ForbiddenError, hikari.NotFoundError):
             pass

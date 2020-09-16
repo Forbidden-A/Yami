@@ -46,7 +46,9 @@ class Bot(lightbulb.Bot):
                     "\n"
                     "".join(
                         traceback.format_exception(
-                            type(e or e.__cause__), e or e.__cause__, e.__traceback__,
+                            type(e or e.__cause__),
+                            e or e.__cause__,
+                            e.__traceback__,
                         )
                     )
                 )

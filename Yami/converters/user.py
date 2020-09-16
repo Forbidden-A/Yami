@@ -9,16 +9,11 @@ from Yami.converters.reg import resolve_id_from_arg, USER_MENTION_REGEX
 async def user_converter(arg: WrappedArg) -> hikari.User:
     if (user_id := resolve_id_from_arg(arg.data, USER_MENTION_REGEX)) is not None:
         # noinspection PyProtectedMember
-        if not arg.context.bot.is_stateless:
-            if (user := arg.context.bot.cache.get_user(user_id)) is not None:
-                return user
+        if (user := arg.context.bot.cache.get_user(user_id)) is not None:
+            return user
         return await arg.context.bot.rest.fetch_user(user_id)
     else:
         # noinspection PyProtectedMember
-        if arg.context.bot.is_stateless:
-            raise ConverterFailure(
-                "Unable to get user by username as cache is disabled."
-            )
         users = tuple(
             filter(
                 lambda user: user.username == arg,

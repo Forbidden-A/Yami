@@ -38,7 +38,8 @@ class Info(Plugin):
         embed = hikari.Embed(
             colour=0x3498DB,
             description=(
-                "Yami is a discord bot made using [Hikari](https://nekokatt.github.io/hikari/) and [Lightbulb](https://tandemdude.gitlab.io/lightbulb/)\n"
+                "Yami is a discord bot made using [Hikari](https://nekokatt.github.io/hikari/) and [Lightbulb]("
+                "https://tandemdude.gitlab.io/lightbulb/)\n "
                 "[Hikari Discord](https://discord.com/invite/Jx4cNGG)\n"
                 "[Hikari Docs](https://nekokatt.github.io/hikari/hikari/index.html)\n"
                 "[Hikari Github](https://github.com/nekokatt/hikari)\n"
@@ -127,7 +128,10 @@ class Info(Plugin):
 
         created_at = user.created_at.astimezone(timezone.utc)
 
-        created_at = f"{created_at.strftime(self.date_format)}. {display_time_from_delta((now - created_at), granularity=2)} ago."
+        created_at = (
+            f"{created_at.strftime(self.date_format)}."
+            f"{display_time_from_delta((now - created_at), granularity=2)} ago. "
+        )
         embed = (
             hikari.Embed(
                 title="Inspect User",
@@ -149,10 +153,15 @@ class Info(Plugin):
     @cooldowns.cooldown(length=30, usages=3, bucket=cooldowns.UserBucket)
     @inspect.command(aliases=["g", "gld"])
     async def guild(self, context: Context, guild_id: guild_converter = None):
-        guild: typing.Union[hikari.GatewayGuild, hikari.RESTGuild] = guild_id or (
-            self.bot.cache.get_guild(context.guild_id)
-            or await self.bot.rest.fetch_guild(context.guild_id)
-        ) if context.guild_id else None
+        guild: typing.Union[hikari.GatewayGuild, hikari.RESTGuild] = (
+            guild_id
+            or (
+                self.bot.cache.get_available_guild(context.guild_id)
+                or await self.bot.rest.fetch_guild(context.guild_id)
+            )
+            if context.guild_id
+            else None
+        )
 
         if guild is None:
             return context.reply("Please provide a guild.")

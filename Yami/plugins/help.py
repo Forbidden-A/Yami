@@ -23,7 +23,10 @@ class MyHelpCommand(HelpCommand):
     async def send_help_overview(self, context: Context) -> None:
 
         plugin_commands = [
-            [plugin.name, await filter_commands(context, plugin.commands.values()),]
+            [
+                plugin.name,
+                await filter_commands(context, plugin.commands.values()),
+            ]
             for plugin in self.bot.plugins.values()
         ]
         all_plugin_commands = []
@@ -102,7 +105,9 @@ class MyHelpCommand(HelpCommand):
         )
         if command_help := get_help_text(command):
             embed.add_field(
-                name="**Description**", value=f"```md\n{command_help}```", inline=False,
+                name="**Description**",
+                value=f"```md\n{command_help}```",
+                inline=False,
             )
         await context.reply(embed=embed)
 
@@ -138,7 +143,9 @@ class MyHelpCommand(HelpCommand):
         )
         if command_help := get_help_text(group):
             embed.add_field(
-                name="**Description**", value=f"```md\n{command_help}```", inline=False,
+                name="**Description**",
+                value=f"```md\n{command_help}```",
+                inline=False,
             )
         await context.reply(embed=embed)
 
@@ -152,7 +159,9 @@ class MyHelpCommand(HelpCommand):
         )
         if help_text := get_help_text(plugin):
             embed.add_field(
-                name="**Description**", value=f"```md\n{help_text}\n```", inline=False,
+                name="**Description**",
+                value=f"```md\n{help_text}\n```",
+                inline=False,
             )
         if commands := plugin.commands:
             embed.add_field(

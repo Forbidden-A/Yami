@@ -11,20 +11,13 @@ from Yami.converters.reg import resolve_id_from_arg, USER_MENTION_REGEX
 async def member_converter(arg: WrappedArg) -> hikari.Member:
     if (user_id := resolve_id_from_arg(arg.data, USER_MENTION_REGEX)) is not None:
         # noinspection PyProtectedMember
-        if not arg.context.bot.is_stateless:
-            if (
-                member := arg.context.bot.cache.get_member(
-                    arg.context.guild_id, user_id
-                )
-            ) is not None:
-                return member
+        if (
+            member := arg.context.bot.cache.get_member(arg.context.guild_id, user_id)
+        ) is not None:
+            return member
         return await arg.context.bot.rest.fetch_member(arg.context.guild_id, user_id)
     else:
         # noinspection PyProtectedMember
-        if arg.context.bot.is_stateless:
-            raise ConverterFailure(
-                "Unable to get member by nick/username as cache is disabled."
-            )
         members = tuple(
             filter(
                 lambda member: member.username == arg or member.nickname == arg,

@@ -50,7 +50,9 @@ class Events(Plugin):
                 timestamp=created_at,
             )
             .set_author(name=message.author.username, icon=message.author.avatar_url)
-            .set_footer(text=f"#{channel.name}",)
+            .set_footer(
+                text=f"#{channel.name}",
+            )
         )
         if message.attachments:
             attachment = message.attachments[0]
