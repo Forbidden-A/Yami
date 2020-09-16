@@ -29,7 +29,7 @@ def main():
             insensitive_commands=True,
             logger=logger,
             force_color=True,
-            logging_level=logging.WARNING,
+            logs=logging.WARNING,
             intents=hikari.Intents.ALL,
         )
         logger.setLevel(logging.INFO)
