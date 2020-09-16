@@ -28,7 +28,7 @@ def main():
             token=token,
             insensitive_commands=True,
             logger=logger,
-            stateless=False,
+            force_color=True,
             logging_level=logging.WARNING,
             intents=hikari.Intents.ALL,
         )
